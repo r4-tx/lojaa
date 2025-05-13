@@ -1,15 +1,28 @@
 package com.mave.loja.model;
 
+
+import jakarta.persistence.*;
+
+@Entity
+@Table(name = "produtos")
 public class Produto {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
+
     private String nome;
     private String descricao;
     private double preco;
     private int quantidade;
 
-    // Construtor completo
-    public Produto(int id, String nome, String descricao, double preco, int quantidade) {
-        this.id = id;
+
+
+    public Produto() {
+    }
+
+
+    public Produto(String nome, String descricao, double preco, int quantidade) {
         this.nome = nome;
         this.descricao = descricao;
         this.preco = preco;
@@ -17,8 +30,6 @@ public class Produto {
     }
 
 
-    public Produto() {
-    }
 
     // Getters e Setters
     public int getId() {

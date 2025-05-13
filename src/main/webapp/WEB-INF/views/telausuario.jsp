@@ -1,9 +1,4 @@
-
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ page contentType="text/html; charset=UTF-8" language="java" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
-
 <%
     String usuarioLogado = (String) session.getAttribute("usuarioLogado");
     if (usuarioLogado != null) {
@@ -11,6 +6,9 @@
     <p>Bem-vindo, <%= usuarioLogado %> | <a href="logout.jsp">Logout</a></p>
 <%
     }
+%>
+
+<%
     String erro = (String) request.getAttribute("erro");
     if (erro == null) {
         erro = "";
@@ -29,15 +27,15 @@
     <title>Loja Alijoz - Sua Melhor Escolha</title>
 
     <!-- Estilos CSS -->
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/oi.css">
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/produtos.css">
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/carrinho.css">
+    <link rel="stylesheet" href="<%= request.getContextPath() %>/assets/css/oi.css">
+    <link rel="stylesheet" href="<%= request.getContextPath() %>/assets/css/produtos.css">
+    <link rel="stylesheet" href="<%= request.getContextPath() %>/assets/css/carrinho.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 
     <!-- JavaScript -->
-    <script src="${pageContext.request.contextPath}/assets/js/carrinho.js" defer></script>
-    <script src="${pageContext.request.contextPath}/assets/js/script.js" defer></script>
+    <script src="<%= request.getContextPath() %>/assets/js/carrinho.js" defer></script>
+    <script src="<%= request.getContextPath() %>/assets/js/script.js" defer></script>
 </head>
 <body>
 
@@ -48,16 +46,13 @@
     </div>
     <nav>
         <ul class="nav-links">
-            <c:choose>
-                <c:when test="${empty usuarioLogado}">
-                    <li><a href="login.jsp"><i class="fas fa-sign-in-alt"></i> Entre aqui</a></li>
-                </c:when>
-                <c:otherwise>
-                    <li><a href="logout.jsp"><i class="fas fa-sign-out-alt"></i> Sair</a></li>
-                </c:otherwise>
-            </c:choose>
-            <li><a href="index"><i class="fas fa-home"></i> Início</a></li>
-            <li><a href="produtos?view=lista"><i class="fas fa-box"></i> Produtos</a></li>
+            <% if (usuarioLogado == null) { %>
+                <li><a href="login.jsp"><i class="fas fa-sign-in-alt"></i> Entre aqui</a></li>
+            <% } else { %>
+                <li><a href="logout.jsp"><i class="fas fa-sign-out-alt"></i> Sair</a></li>
+            <% } %>
+            <li><a href="index.jsp"><i class="fas fa-home"></i> Início</a></li>
+            <li><a href="produtos"><i class="fas fa-box"></i> Produtos</a></li>
             <li><a href="carrinho"><i class="fas fa-shopping-cart"></i> Carrinho</a></li>
             <li><a href="contato"><i class="fas fa-envelope"></i> Contato</a></li>
         </ul>
@@ -73,9 +68,9 @@
 <section class="banner">
     <div class="carousel">
         <div class="slides">
-            <img src="${pageContext.request.contextPath}/assets/img/banner1.jpg" alt="Promoção Especial" class="active">
-            <img src="${pageContext.request.contextPath}/assets/img/banner2.jpg" alt="Novidades da Semana">
-            <img src="${pageContext.request.contextPath}/assets/img/banner3.jpg" alt="Descontos Exclusivos">
+            <img src="<%= request.getContextPath() %>/assets/img/banner1.jpg" alt="Promoção Especial" class="active">
+            <img src="<%= request.getContextPath() %>/assets/img/banner2.jpg" alt="Novidades da Semana">
+            <img src="<%= request.getContextPath() %>/assets/img/banner3.jpg" alt="Descontos Exclusivos">
         </div>
         <button class="carousel-button prev" onclick="moveSlide(-1)">&#10094;</button>
         <button class="carousel-button next" onclick="moveSlide(1)">&#10095;</button>
@@ -84,61 +79,35 @@
         <div class="banner-text">
             <h1>Bem-vindo à Loja Alijoz</h1>
             <p>Os melhores produtos pelo melhor preço!</p>
-            <a href="produtos?view=lista" class="btn">Ver Produtos</a>
+            <a href="produtos" class="btn">Ver Produtos</a>
         </div>
     </div>
 </section>
 
 <!-- Produtos em Destaque -->
-
 <section class="destaques">
     <h2>Produtos em Destaque</h2>
     <div class="produtos-container">
-
-        <!-- iPhone 16 Pro -->
         <div class="produto">
-            <img src="${pageContext.request.contextPath}/assets/img/iphone.jpg" alt="iPhone 16 Pro">
-            <h3>iPhone 16 Pro</h3>
+            <img src="<%= request.getContextPath() %>/assets/img/iphone.jpg" alt="iPhone 16">
+            <h3>iPhone 16</h3>
             <p>R$ 7.999,00</p>
-            <form action="carrinho" method="post">
-                <input type="hidden" name="acao" value="adicionar">
-                <input type="hidden" name="produtoId" value="6">
-                <input type="hidden" name="quantidade" value="1">
-                <button type="submit" class="btn">Adicionar ao Carrinho</button>
-            </form>
+            <button class="btn" onclick="adicionarAoCarrinho(1, 'iPhone 16', 7999)">Adicionar ao Carrinho</button>
         </div>
-
-        <!-- Motorola EDGE 50 -->
         <div class="produto">
-            <img src="${pageContext.request.contextPath}/assets/img/motorola.jpg" alt="Motorola EDGE">
-            <h3>Motorola EDGE 50</h3>
+            <img src="<%= request.getContextPath() %>/assets/img/motorola.jpg" alt="Motorola EDGE">
+            <h3>Motorola EDGE</h3>
             <p>R$ 4.899,00</p>
-            <form action="carrinho" method="post">
-                <input type="hidden" name="acao" value="adicionar">
-                <input type="hidden" name="produtoId" value="7">
-                <input type="hidden" name="quantidade" value="1">
-                <button type="submit" class="btn">Adicionar ao Carrinho</button>
-            </form>
+            <button class="btn" onclick="adicionarAoCarrinho(2, 'Motorola EDGE', 4899)">Adicionar ao Carrinho</button>
         </div>
-
-        <!-- Samsung S25 ULTRA -->
         <div class="produto">
-            <img src="${pageContext.request.contextPath}/assets/img/samsung.jpg" alt="Samsung S25 ULTRA">
+            <img src="<%= request.getContextPath() %>/assets/img/samsung.jpg" alt="Samsung S25 ULTRA">
             <h3>Samsung S25 ULTRA</h3>
             <p>R$ 7.499,00</p>
-            <form action="carrinho" method="post">
-                <input type="hidden" name="acao" value="adicionar">
-                <input type="hidden" name="produtoId" value="8">
-                <input type="hidden" name="quantidade" value="1">
-                <button type="submit" class="btn">Adicionar ao Carrinho</button>
-            </form>
+            <button class="btn" onclick="adicionarAoCarrinho(3, 'Samsung S25 ULTRA', 7499)">Adicionar ao Carrinho</button>
         </div>
-
     </div>
 </section>
-
-
-
 
 <!-- Seção Sobre Nós -->
 <section class="sobre-nos">
@@ -163,6 +132,7 @@
 </footer>
 
 <script>
+    // Carrossel
     let slideIndex = 0;
     showSlides();
 

@@ -1,8 +1,20 @@
 package com.mave.loja.model;
 
+import jakarta.persistence.*;
+
+@Entity
+@Table(name = "carrinho_itens")
 public class CarrinhoItem {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
+
+    @ManyToOne
     private Produto produto;
+
     private int quantidade;
+
 
     public CarrinhoItem(Produto produto, int quantidade) {
         this.produto = produto;

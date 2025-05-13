@@ -1,32 +1,30 @@
-package com.mave.loja.controler; // Corrigido "controler" para "controller"
+package com.mave.loja.controler;
 
-import jakarta.servlet.ServletException;
+import com.mave.loja.dao.UsuarioDAO;
+import com.mave.loja.model.Usuario;
 import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
-
+import jakarta.servlet.http.*;
+import jakarta.servlet.ServletException;
 import java.io.IOException;
 
-@WebServlet("/login") // Define explicitamente a URL do servlet
+@WebServlet("/login")
 public class LoginServlet extends HttpServlet {
-    private static final long serialVersionUID = 1L;
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        String email = req.getParameter("email");
+        String senha = req.getParameter("senha");
 
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        String usuario = request.getParameter("usuario");
-        String senha = request.getParameter("senha");
+        UsuarioDAO dao = new UsuarioDAO();
+        Usuario usuario = dao.buscarPorEmailSenha(email, senha);
 
-        // Simulação de autenticação (substitua por um banco de dados real)
-        if ("admin".equals(usuario) && "1234".equals(senha)) {
-            HttpSession session = request.getSession();
-            session.setAttribute("usuarioLogado", usuario);
-            response.sendRedirect("indexum.jsp"); // Redireciona para a página inicial
+        if (usuario != null) {
+            HttpSession session = req.getSession();
+            session.setAttribute("usuarioLogado", usuario.getNome());
+            session.setAttribute("tipo", usuario.getTipo());
+            resp.sendRedirect("index.jsp");
         } else {
-            // Adiciona uma mensagem de erro e retorna para a página de login
-            request.setAttribute("erro", "Usuário ou senha incorretos");
-            request.getRequestDispatcher("login.jsp").forward(request, response); // Alterado para login.jsp
+            req.setAttribute("erro", "Login inválido");
+            req.getRequestDispatcher("login.jsp").forward(req, resp);
         }
     }
 }

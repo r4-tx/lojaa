@@ -1,65 +1,73 @@
-<%@ page contentType="text/html; charset=UTF-8" language="java" %>
-<%@ page import="java.util.List, com.mave.loja.model.CarrinhoItem" %>
 
-<%
-    List<CarrinhoItem> carrinho = (List<CarrinhoItem>) session.getAttribute("carrinho");
-    double totalCarrinho = (carrinho != null) ? carrinho.stream().mapToDouble(item -> item.getTotal()).sum() : 0;
-%>
 
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>Carrinho - Loja Alijoz</title>
-
-<link rel="stylesheet" href="<%= request.getContextPath() %>/assets/css/carrinho.css">
-
-
-
-
-    <script src="<%= request.getContextPath() %>/assets/js/carrinho.js" defer></script>
+    <title>Meu Carrinho</title>
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/carrinho.css">
+    <script src="${pageContext.request.contextPath}/assets/js/carrinho.js" defer></script>
 </head>
 <body>
+<div class="container">
+    <h2>Meu Carrinho</h2>
 
-<h1>Seu Carrinho</h1>
+    <c:choose>
+        <c:when test="${empty sessionScope.carrinho}">
+            <div class="alert">Seu carrinho está vazio.</div>
+        </c:when>
+        <c:otherwise>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Produto</th>
+                        <th>Preço</th>
+                        <th>Quantidade</th>
+                        <th>Subtotal</th>
+                        <th>Ação</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <c:forEach var="item" items="${sessionScope.carrinho}">
+                        <tr>
+                            <td>${item.produto.nome}</td>
+                            <td>R$ ${item.produto.preco}</td>
+                            <td>
+                                <div class="quantidade">
+                                    <button onclick="alterarQuantidade(${item.produto.id}, -1)">−</button>
+                                    <input type="number" id="qtd-${item.produto.id}" value="${item.quantidade}" min="1">
+                                    <button onclick="alterarQuantidade(${item.produto.id}, 1)">+</button>
+                                </div>
+                            </td>
+                            <td>R$ ${item.produto.preco * item.quantidade}</td>
+                            <td>
+                                <form action="${pageContext.request.contextPath}/carrinho" method="post">
+                                    <input type="hidden" name="acao" value="remover">
+                                    <input type="hidden" name="produtoId" value="${item.produto.id}">
+                                    <button type="submit" class="btn-remover">Remover</button>
+                                </form>
+                            </td>
+                        </tr>
+                    </c:forEach>
+                </tbody>
+            </table>
 
-<table>
-    <thead>
-        <tr>
-            <th>Produto</th>
-            <th>Quantidade</th>
-            <th>Preço</th>
-            <th>Total</th>
-            <th>Ação</th>
-        </tr>
-    </thead>
-    <tbody>
-        <% if (carrinho != null && !carrinho.isEmpty()) {
-            for (CarrinhoItem item : carrinho) { %>
-                <tr>
-                    <td><%= item.getProduto().getNome() %></td>
-                    <td>
-                        <input type="number" value="<%= item.getQuantidade() %>" onchange="atualizarQuantidade(<%= item.getProduto().getId() %>, this.value)">
-                    </td>
-                    <td>R$ <%= item.getProduto().getPreco() %></td>
-                    <td>R$ <%= item.getTotal() %></td>
-                    <td>
-                        <button onclick="removerDoCarrinho(<%= item.getProduto().getId() %>)">Remover</button>
-                    </td>
-                </tr>
-            <% }
-        } else { %>
-            <tr>
-                <td colspan="5">Carrinho vazio</td>
-            </tr>
-        <% } %>
-    </tbody>
-</table>
+            <div class="total">
+                <strong>Total: R$ ${totalCarrinho}</strong>
+            </div>
+        </c:otherwise>
+    </c:choose>
 
-<h2>Total: R$ <%= totalCarrinho %></h2>
-<a href="<%= request.getContextPath() %>/pagamento.jsp" class="payment-btn">Ir para o pagamento</a>
+    <!-- Formulário oculto para atualizar quantidade via JS -->
+    <form id="formAtualizarQtd" action="${pageContext.request.contextPath}/carrinho" method="post" style="display:none;">
+        <input type="hidden" name="acao" value="atualizar">
+        <input type="hidden" id="formProdutoId" name="produtoId">
+        <input type="hidden" id="formQuantidade" name="quantidade">
+    </form>
 
-
-
+    <a href="${pageContext.request.contextPath}/produtos?view=lista" class="btn-voltar">Voltar à loja</a>
+</div>
 </body>
 </html>

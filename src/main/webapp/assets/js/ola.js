@@ -1,14 +1,14 @@
+<script>
 document.addEventListener("DOMContentLoaded", function () {
     // Efeito de fade-in ao carregar a página
     document.body.classList.add("fade-in");
 
     // Captura os botões de adicionar ao carrinho
-    const buttons = document.querySelectorAll(".produto .btn");
-
-    buttons.forEach(button => {
+    document.querySelectorAll(".produto .btn").forEach(button => {
         button.addEventListener("click", function () {
-            const produto = this.parentElement.querySelector("h3").innerText;
-            adicionarAoCarrinho(produto);
+            const produtoNome = this.parentElement.querySelector("h3").innerText;
+            const produtoId = this.getAttribute("data-id");
+            adicionarAoCarrinho(produtoNome, produtoId);
         });
     });
 
@@ -48,11 +48,33 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 });
 
-// Função para exibir notificação ao adicionar produto
-function adicionarAoCarrinho(produto) {
+// Função para adicionar produto ao carrinho (via backend)
+function adicionarAoCarrinho(produtoNome, produtoId) {
+    fetch("carrinho", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/x-www-form-urlencoded"
+        },
+        body: `acao=adicionar&id=${produtoId}&quantidade=1`
+    })
+    .then(response => {
+        if (response.ok) {
+            exibirNotificacao(`${produtoNome} adicionado ao carrinho!`);
+        } else {
+            exibirNotificacao(`Erro ao adicionar ${produtoNome}`, true);
+        }
+    })
+    .catch(() => {
+        exibirNotificacao(`Erro de conexão ao adicionar ${produtoNome}`, true);
+    });
+}
+
+// Função para exibir notificação
+function exibirNotificacao(mensagem, erro = false) {
     let cart = document.createElement("div");
     cart.className = "cart-notification";
-    cart.innerHTML = `<p>${produto} adicionado ao carrinho!</p>`;
+    cart.style.backgroundColor = erro ? "#e74c3c" : "#2ecc71";
+    cart.innerHTML = `<p>${mensagem}</p>`;
     document.body.appendChild(cart);
 
     setTimeout(() => {
@@ -61,7 +83,7 @@ function adicionarAoCarrinho(produto) {
     }, 2000);
 }
 
-// Estilos para notificação do carrinho
+// Estilos para notificações e fade
 const style = document.createElement("style");
 style.innerHTML = `
     .fade-in {
@@ -81,6 +103,8 @@ style.innerHTML = `
         padding: 10px 20px;
         border-radius: 5px;
         transition: opacity 0.5s;
+        z-index: 9999;
     }
 `;
 document.head.appendChild(style);
+</script>

@@ -1,97 +1,130 @@
 package com.mave.loja.dao;
 
 import com.mave.loja.model.Produto;
+import com.mave.loja.util.HibernateUtil;
+import org.hibernate.Session;
+import org.hibernate.Transaction;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class ProdutoDAO {
 
-    // Lista de produtos simulando um banco de dados
-    private static final List<Produto> produtos = Collections.synchronizedList(new ArrayList<>());
-
-    static {
-        produtos.add(new Produto(1, "iPhone 16", "Novo iPhone 16 com tecnologia avançada.", 7999.00, 10));
-        produtos.add(new Produto(2, "Motorola EDGE", "Motorola EDGE com excelente desempenho.", 4899.00, 20));
-        produtos.add(new Produto(3, "Samsung S25 ULTRA", "Samsung S25 ULTRA com câmera de alta resolução.", 7499.00, 15));
-
-        produtos.add(new Produto(4, "Produto 1", "Descrição do Produto 1", 10.0, 50));
-        produtos.add(new Produto(5, "Produto 2", "Descrição do Produto 2", 20.0, 30));
-        produtos.add(new Produto(6, "Produto 3", "Descrição do Produto 3", 30.0, 15));
-
-
-    }
-
-    // Busca um produto pelo ID
-    public static Produto buscarPorId(int id) {
-        synchronized (produtos) {
-            return produtos.stream()
-                    .filter(produto -> produto.getId() == id)
-                    .findFirst()
-                    .orElse(null);
+    public void salvar(Produto produto) {
+        Transaction transacao = null;
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            transacao = session.beginTransaction();
+            session.save(produto);
+            transacao.commit();
+        } catch (Exception e) {
+            if (transacao != null) transacao.rollback();
+            e.printStackTrace();
         }
     }
 
-    // Retorna a lista de produtos
-    public static List<Produto> listarProdutos() {
-        synchronized (produtos) {
-            return new ArrayList<>(produtos); // Retorna uma cópia para evitar modificações diretas
+    // Listar todos os produtos
+    public List<Produto> listarProdutos() {
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            return session.createQuery("from Produto", Produto.class).list();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
         }
     }
 
-    // Adiciona um novo produto à lista
-    public static void adicionarProduto(Produto produto) {
-        synchronized (produtos) {
-            produtos.add(produto);
+    // ✅ Listar produtos em destaque
+    public List<Produto> listarProdutosEmDestaque() {
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            return session.createQuery(
+                            "from Produto p where p.nome in (:nomes)", Produto.class)
+                    .setParameterList("nomes", List.of(
+                            "iPhone 16",
+                            "Motorola EDGE",
+                            "Samsung S25 ULTRA"
+                    ))
+                    .list();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
         }
     }
 
-    // Remove um produto pelo ID
-    public static boolean removerProduto(int id) {
-        synchronized (produtos) {
-            return produtos.removeIf(produto -> produto.getId() == id);
+    // Buscar produto por ID
+    public Produto buscarPorId(int id) {
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            return session.get(Produto.class, id);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
         }
     }
 
-    // Atualiza um produto existente
-    public static boolean atualizarProduto(Produto produtoAtualizado) {
-        synchronized (produtos) {
-            for (int i = 0; i < produtos.size(); i++) {
-                if (produtos.get(i).getId() == produtoAtualizado.getId()) {
-                    produtos.set(i, produtoAtualizado);
-                    return true;
-                }
+    // Atualizar produto
+    public boolean atualizarProduto(Produto produtoAtualizado) {
+        Transaction transacao = null;
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            transacao = session.beginTransaction();
+            session.update(produtoAtualizado);
+            transacao.commit();
+            return true;
+        } catch (Exception e) {
+            if (transacao != null) transacao.rollback();
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    // Remover produto por ID
+    public boolean removerProduto(int id) {
+        Transaction transacao = null;
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            Produto produto = session.get(Produto.class, id);
+            if (produto != null) {
+                transacao = session.beginTransaction();
+                session.delete(produto);
+                transacao.commit();
+                return true;
             }
+            return false;
+        } catch (Exception e) {
+            if (transacao != null) transacao.rollback();
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    // Diminuir quantidade em estoque
+    public boolean diminuirQuantidade(int id, int quantidade) {
+        Transaction transacao = null;
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            Produto produto = session.get(Produto.class, id);
+            if (produto != null && produto.getQuantidade() >= quantidade) {
+                transacao = session.beginTransaction();
+                produto.setQuantidade(produto.getQuantidade() - quantidade);
+                session.update(produto);
+                transacao.commit();
+                return true;
+            }
+        } catch (Exception e) {
+            if (transacao != null) transacao.rollback();
+            e.printStackTrace();
         }
         return false;
     }
 
-
-    public static boolean diminuirQuantidade(int id, int quantidade) {
-        synchronized (produtos) {
-            for (Produto produto : produtos) {
-                if (produto.getId() == id) {
-                    if (produto.getQuantidade() >= quantidade) {
-                        produto.setQuantidade(produto.getQuantidade() - quantidade);
-                        return true;
-                    }
-                    return false; // Estoque insuficiente
-                }
+    // Retornar quantidade ao estoque
+    public void retornarQuantidade(int id, int quantidade) {
+        Transaction transacao = null;
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            Produto produto = session.get(Produto.class, id);
+            if (produto != null) {
+                transacao = session.beginTransaction();
+                produto.setQuantidade(produto.getQuantidade() + quantidade);
+                session.update(produto);
+                transacao.commit();
             }
-        }
-        return false; // Produto não encontrado
-    }
-
-    // ✅ Retorna a quantidade de um produto para o estoque após remoção do carrinho
-    public static void retornarQuantidade(int id, int quantidade) {
-        synchronized (produtos) {
-            for (Produto produto : produtos) {
-                if (produto.getId() == id) {
-                    produto.setQuantidade(produto.getQuantidade() + quantidade);
-                    break;
-                }
-            }
+        } catch (Exception e) {
+            if (transacao != null) transacao.rollback();
+            e.printStackTrace();
         }
     }
 }

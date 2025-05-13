@@ -86,7 +86,7 @@
             <div class="banner-text">
                 <h1>Bem-vindo à Loja Alijoz</h1>
                 <p>Os melhores produtos pelo melhor preço!</p>
-                <a href="produtos.jsp" class="btn">Ver Produtos</a> <!-- Link para produtos.jsp -->
+                <a href=" listaProdutos.jsp" class="btn">Ver Produtos</a> <!-- Link para produtos.jsp -->
             </div>
         </div>
     </section>

@@ -76,7 +76,8 @@ public class CarrinhoServlet extends HttpServlet {
     private void adicionarProduto(List<CarrinhoItem> carrinho, int produtoId, int quantidade) {
         if (quantidade <= 0) return;
 
-        Produto produto = ProdutoDAO.buscarPorId(produtoId);
+        ProdutoDAO produtoDAO = new ProdutoDAO();
+        Produto produto = produtoDAO.buscarPorId(produtoId);
         if (produto == null) return;
 
         for (CarrinhoItem item : carrinho) {
@@ -88,6 +89,7 @@ public class CarrinhoServlet extends HttpServlet {
 
         carrinho.add(new CarrinhoItem(produto, quantidade));
     }
+
 
     private void removerProduto(List<CarrinhoItem> carrinho, int produtoId) {
         carrinho.removeIf(item -> item.getProduto().getId() == produtoId);
