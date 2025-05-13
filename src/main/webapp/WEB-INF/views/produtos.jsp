@@ -21,7 +21,7 @@
 <body>
     <div class="container">
         <!-- Botão Voltar -->
-        <a href="index.jsp" class="btn-voltar">Voltar</a>
+        <a href="admin.jsp" class="btn-voltar">Voltar</a>
 
         <h2>Lista de Produtos</h2>
 

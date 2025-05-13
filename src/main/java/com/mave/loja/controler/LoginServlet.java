@@ -24,7 +24,13 @@ public class LoginServlet extends HttpServlet {
             HttpSession session = req.getSession();
             session.setAttribute("usuarioLogado", usuario.getNome());
             session.setAttribute("tipo", usuario.getTipo());
-            resp.sendRedirect("index.jsp");
+
+            // ✅ Redirecionamento conforme o tipo
+            if ("admin".equals(usuario.getTipo())) {
+                resp.sendRedirect("admin.jsp");
+            } else {
+                resp.sendRedirect("index.jsp");
+            }
         } else {
             req.setAttribute("erro", "Login inválido");
             req.getRequestDispatcher("login.jsp").forward(req, resp);

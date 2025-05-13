@@ -1,13 +1,34 @@
 document.addEventListener("DOMContentLoaded", function () {
     const filtro = document.getElementById("filtro");
-    const linhas = document.querySelectorAll("#tabela-produtos tbody tr");
+    const ordenar = document.getElementById("ordenar");
+    const container = document.getElementById("produtos-container");
 
-    filtro.addEventListener("input", function () {
+    const produtos = Array.from(container.getElementsByClassName("card-produto"));
+
+    function atualizarFiltro() {
         const termo = filtro.value.toLowerCase();
-
-        linhas.forEach(linha => {
-            const nome = linha.cells[0].textContent.toLowerCase();
-            linha.style.display = nome.includes(termo) ? "" : "none";
+        produtos.forEach(produto => {
+            const nome = produto.dataset.nome.toLowerCase();
+            produto.style.display = nome.includes(termo) ? "block" : "none";
         });
-    });
+    }
+
+    function ordenarProdutos() {
+        const ordem = ordenar.value;
+        const produtosOrdenados = [...produtos].sort((a, b) => {
+            const precoA = parseFloat(a.dataset.preco);
+            const precoB = parseFloat(b.dataset.preco);
+            return ordem === "asc" ? precoA - precoB : precoB - precoA;
+        });
+
+        // Reanexa os elementos na nova ordem
+        container.innerHTML = "";
+        produtosOrdenados.forEach(produto => container.appendChild(produto));
+        atualizarFiltro(); // reaplica filtro
+    }
+
+    filtro.addEventListener("input", atualizarFiltro);
+    ordenar.addEventListener("change", ordenarProdutos);
+
+    ordenarProdutos(); // ordena ao carregar
 });
