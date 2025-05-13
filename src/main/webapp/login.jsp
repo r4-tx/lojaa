@@ -232,8 +232,8 @@
             <h2>Login</h2>
             <form action="login" method="post">
                 <div class="form-group">
-                    <label for="usuario"><i class="fas fa-user"></i> Usuário:</label>
-                    <input type="text" id="usuario" name="usuario" placeholder="Digite seu usuário" required>
+                    <label for="email"><i class="fas fa-user"></i> E-mail:</label>
+                    <input type="text" id="email" name="email" placeholder="Digite seu e-mail" required>
                 </div>
                 <div class="form-group">
                     <label for="senha"><i class="fas fa-lock"></i> Senha:</label>
@@ -244,6 +244,7 @@
                     <p class="error-message"><i class="fas fa-exclamation-circle"></i> <%= erro %></p>
                 <% } %>
             </form>
+
             <p class="register-link">Ainda não tem uma conta? <a href="cadastro.jsp">Cadastre-se</a></p>
         </div>
     </section>

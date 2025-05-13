@@ -1,11 +1,3 @@
-<%
-    if (session.getAttribute("usuarioLogado") == null) {
-        response.sendRedirect("login.jsp");
-        return;
-    }
-%>
-<h2>Lista de Produtos para Cliente</h2>
-<p>Bem-vindo(a), <%= session.getAttribute("usuarioLogado") %>!</p>
 
 
 

@@ -11,8 +11,11 @@ import java.io.IOException;
 public class LoginServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        String email = req.getParameter("email");
-        String senha = req.getParameter("senha");
+        String email = req.getParameter("email").trim().toLowerCase();
+        String senha = req.getParameter("senha").trim();
+
+        System.out.println("Email recebido: " + email);
+        System.out.println("Senha recebida: " + senha);
 
         UsuarioDAO dao = new UsuarioDAO();
         Usuario usuario = dao.buscarPorEmailSenha(email, senha);
