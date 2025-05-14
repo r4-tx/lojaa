@@ -1,6 +1,5 @@
 package com.mave.loja.model;
 
-
 import jakarta.persistence.*;
 
 @Entity
@@ -9,18 +8,14 @@ public class Produto {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Long id; // ✅ ALTERADO AQUI
 
     private String nome;
     private String descricao;
     private double preco;
     private int quantidade;
 
-
-
-    public Produto() {
-    }
-
+    public Produto() {}
 
     public Produto(String nome, String descricao, double preco, int quantidade) {
         this.nome = nome;
@@ -29,14 +24,12 @@ public class Produto {
         this.quantidade = quantidade;
     }
 
-
-
     // Getters e Setters
-    public int getId() {
+    public Long getId() { // ✅ ALTERADO
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Long id) { // ✅ ALTERADO
         this.id = id;
     }
 

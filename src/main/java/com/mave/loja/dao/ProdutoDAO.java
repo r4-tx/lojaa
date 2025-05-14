@@ -49,7 +49,7 @@ public class ProdutoDAO {
     }
 
     // Buscar produto por ID
-    public Produto buscarPorId(int id) {
+    public Produto buscarPorId(Long id) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             return session.get(Produto.class, id);
         } catch (Exception e) {

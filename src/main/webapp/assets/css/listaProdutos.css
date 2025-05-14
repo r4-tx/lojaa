@@ -5,27 +5,77 @@ body {
     padding: 0;
 }
 
+/* ===== NAVBAR PROFISSIONAL ===== */
 .navbar {
-    background-color: #fff;
-    padding: 15px 30px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    background: #fff;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    position: fixed;
+    width: 100%;
+    top: 0;
+    z-index: 1000;
+}
+
+.navbar .container {
     display: flex;
-    align-items: center;
     justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    max-width: 1200px;
+    margin: 0 auto;
 }
 
 .logo {
-    font-size: 22px;
+    font-size: 1.5rem;
     font-weight: bold;
+    color: #0B5ED7;
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
 
-.highlight {
-    color: #007bff;
+.logo i {
+    color: #0B5ED7;
+    font-size: 1.4rem;
 }
 
+.nav-links {
+    list-style: none;
+    display: flex;
+    gap: 24px;
+    align-items: center;
+    margin: 0;
+    padding: 0;
+}
+
+.nav-links li a {
+    text-decoration: none;
+    color: #333;
+    font-weight: 500;
+    font-size: 16px;
+    transition: color 0.3s ease;
+}
+
+.nav-links li a:hover {
+    color: #0B5ED7;
+}
+
+.nav-links .btn {
+    background: #0B5ED7;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-weight: 500;
+    transition: background 0.3s ease;
+}
+
+.nav-links .btn:hover {
+    background: #084cb6;
+}
+
+/* CONTEÚDO ABAIXO DA NAVBAR */
 .container {
     max-width: 1200px;
-    margin: 30px auto;
+    margin: 90px auto 30px; /* Espaço abaixo da navbar */
     padding: 0 20px;
 }
 
@@ -104,4 +154,16 @@ input[type="number"] {
     margin-right: 5px;
     border-radius: 4px;
     border: 1px solid #ccc;
+}
+
+/* RESPONSIVO MENU (opcional para expansão futura) */
+@media (max-width: 768px) {
+    .nav-links {
+        flex-direction: column;
+        display: none;
+    }
+
+    .menu-toggle {
+        display: block;
+    }
 }

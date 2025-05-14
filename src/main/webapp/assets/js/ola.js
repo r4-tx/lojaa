@@ -1,61 +1,56 @@
-<script>
-document.addEventListener("DOMContentLoaded", function () {
-    // Efeito de fade-in ao carregar a página
+document.addEventListener("DOMContentLoaded", () => {
     document.body.classList.add("fade-in");
 
-    // Captura os botões de adicionar ao carrinho
-    document.querySelectorAll(".produto .btn").forEach(button => {
-        button.addEventListener("click", function () {
-            const produtoNome = this.parentElement.querySelector("h3").innerText;
-            const produtoId = this.getAttribute("data-id");
-            adicionarAoCarrinho(produtoNome, produtoId);
+    // Botões de adicionar ao carrinho
+    document.querySelectorAll(".card-produto .btn").forEach(button => {
+        button.addEventListener("click", function (e) {
+            e.preventDefault();
+            const produtoNome = this.closest(".card-produto").querySelector("h3").innerText;
+            const produtoId = this.dataset.id || this.parentElement.querySelector("input[name='produtoId']")?.value;
+            if (produtoId) {
+                adicionarAoCarrinho(produtoNome, produtoId);
+            }
         });
     });
 
-    // Menu hambúrguer
+    // Menu mobile toggle
     const menuToggle = document.querySelector(".menu-toggle");
     const navLinks = document.querySelector(".nav-links");
 
-    menuToggle.addEventListener("click", function () {
-        navLinks.classList.toggle("active");
-    });
+    if (menuToggle && navLinks) {
+        menuToggle.addEventListener("click", () => {
+            navLinks.classList.toggle("active");
+        });
 
-    // Fechar o menu ao clicar fora
-    document.addEventListener("click", function (event) {
-        if (!navLinks.contains(event.target) && !menuToggle.contains(event.target)) {
-            navLinks.classList.remove("active");
-        }
-    });
+        document.addEventListener("click", (event) => {
+            if (!navLinks.contains(event.target) && !menuToggle.contains(event.target)) {
+                navLinks.classList.remove("active");
+            }
+        });
+    }
 
-    // Carrossel
+    // Carrossel automático
     let slideIndex = 0;
-    showSlides();
-
-    function showSlides() {
-        let slides = document.querySelectorAll(".slides img");
-        for (let i = 0; i < slides.length; i++) {
-            slides[i].classList.remove("active");
+    const showSlides = () => {
+        const slides = document.querySelectorAll(".slides img");
+        slides.forEach(slide => slide.classList.remove("active"));
+        slideIndex = (slideIndex + 1 > slides.length) ? 1 : slideIndex + 1;
+        if (slides[slideIndex - 1]) {
+            slides[slideIndex - 1].classList.add("active");
         }
-        slideIndex++;
-        if (slideIndex > slides.length) { slideIndex = 1 }
-        slides[slideIndex - 1].classList.add("active");
-        setTimeout(showSlides, 5000); // Muda a imagem a cada 5 segundos
-    }
-
-    function moveSlide(n) {
-        slideIndex += n;
-        showSlides();
-    }
+        setTimeout(showSlides, 5000);
+    };
+    showSlides();
 });
 
-// Função para adicionar produto ao carrinho (via backend)
+// ✅ Corrigido: envia produtoId corretamente
 function adicionarAoCarrinho(produtoNome, produtoId) {
     fetch("carrinho", {
         method: "POST",
         headers: {
             "Content-Type": "application/x-www-form-urlencoded"
         },
-        body: `acao=adicionar&id=${produtoId}&quantidade=1`
+        body: `acao=adicionar&produtoId=${produtoId}&quantidade=1`
     })
     .then(response => {
         if (response.ok) {
@@ -69,42 +64,47 @@ function adicionarAoCarrinho(produtoNome, produtoId) {
     });
 }
 
-// Função para exibir notificação
+// Notificação tipo toast
 function exibirNotificacao(mensagem, erro = false) {
-    let cart = document.createElement("div");
-    cart.className = "cart-notification";
-    cart.style.backgroundColor = erro ? "#e74c3c" : "#2ecc71";
-    cart.innerHTML = `<p>${mensagem}</p>`;
-    document.body.appendChild(cart);
+    const toast = document.createElement("div");
+    toast.className = "cart-notification";
+    toast.style.backgroundColor = erro ? "#dc3545" : "#198754";
+    toast.innerHTML = `<i class="fas ${erro ? 'fa-times-circle' : 'fa-check-circle'}"></i> ${mensagem}`;
+    document.body.appendChild(toast);
 
     setTimeout(() => {
-        cart.style.opacity = "0";
-        setTimeout(() => cart.remove(), 500);
-    }, 2000);
+        toast.style.opacity = "0";
+        setTimeout(() => toast.remove(), 500);
+    }, 2500);
 }
 
-// Estilos para notificações e fade
+// Estilo visual direto no head
 const style = document.createElement("style");
 style.innerHTML = `
     .fade-in {
         opacity: 0;
-        animation: fade 1s forwards;
+        animation: fadeIn 0.8s ease-in-out forwards;
     }
-    @keyframes fade {
+
+    @keyframes fadeIn {
         from { opacity: 0; }
         to { opacity: 1; }
     }
+
     .cart-notification {
         position: fixed;
         top: 20px;
         right: 20px;
-        background: #2ecc71;
+        padding: 12px 20px;
         color: white;
-        padding: 10px 20px;
-        border-radius: 5px;
-        transition: opacity 0.5s;
+        font-size: 16px;
+        border-radius: 6px;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
         z-index: 9999;
+        transition: opacity 0.5s;
+        display: flex;
+        align-items: center;
+        gap: 10px;
     }
 `;
 document.head.appendChild(style);
-</script>

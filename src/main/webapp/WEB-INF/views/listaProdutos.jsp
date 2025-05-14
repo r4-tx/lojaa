@@ -11,10 +11,29 @@
 <body>
 
 <header class="navbar">
-    <div class="logo">
-        <i class="fas fa-store"></i> Loja <span class="highlight">Alijoz</span>
+    <div class="container">
+        <div class="logo">
+            <i class="fas fa-store"></i> <span style="color:#0B5ED7;">Loja</span> <strong>Alijoz</strong>
+        </div>
+        <nav>
+            <ul class="nav-links">
+                <li><a href="index">Início</a></li>
+                <li><a href="produtos?view=lista">Produtos</a></li>
+                <li><a href="carrinho">Carrinho</a></li>
+                <li><a href="contato">Contato</a></li>
+                <c:choose>
+                    <c:when test="${empty sessionScope.usuarioLogado}">
+                        <li><a href="login.jsp" class="btn">Entrar</a></li>
+                    </c:when>
+                    <c:otherwise>
+                        <li><a href="logout.jsp" class="btn">Sair</a></li>
+                    </c:otherwise>
+                </c:choose>
+            </ul>
+        </nav>
     </div>
 </header>
+
 
 <div class="container">
     <div class="top-bar">
